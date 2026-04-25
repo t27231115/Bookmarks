@@ -4,11 +4,10 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>My Bookmarks</title>
-  
+   
   <!-- ★ オリジナルアイコン設定 -->
   <link rel="icon" type="image/png" sizes="32x32" href="maruto.png">
   <link rel="icon" type="image/png" sizes="192x192" href="maruto.png">
-
 
 
   <style>
@@ -301,12 +300,15 @@
 
   <script>
     const bookmarks = [
-      { title: "【通勤】西武バス（往路）", url: "https://transfer-cloud.navitime.biz/seibubus/transfers?origin=00110690&destination=00113434", tag: "Bus", pinned: true },
-      { title: "【通勤】西武バス（復路）", url: "https://transfer-cloud.navitime.biz/seibubus/transfers?origin=00113434&destination=00110690", tag: "Bus", pinned: true },
-      { title: "【通勤】JR東日本", url: "https://transit.yahoo.co.jp/search/result?from=%E5%9B%BD%E5%88%86%E5%AF%BA&to=%E8%A5%BF%E5%A4%A7%E4%BA%95", tag: "Train" },
+      { title: "Google", url: "https://www.google.com", tag: "Search", pinned: true },
+      { title: "YouTube", url: "https://www.youtube.com", tag: "Media", pinned: true },
+      { title: "GitHub", url: "https://github.com", tag: "Dev" },
+      { title: "MDN Web Docs", url: "https://developer.mozilla.org", tag: "Dev" },
+      { title: "Qiita", url: "https://qiita.com", tag: "Dev" },
+      { title: "Twitter / X", url: "https://x.com", tag: "Social" },
+      { title: "はてなブックマーク", url: "https://b.hatena.ne.jp/", tag: "Social" },
       { title: "Amazon", url: "https://www.amazon.co.jp", tag: "Shopping" }
     ];
-
 
     let activeTag = "All";
     let searchKeyword = "";
