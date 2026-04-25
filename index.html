@@ -392,14 +392,14 @@
     });
 
     /* ▼ JSON を読み込んでから描画開始 */
-    fetch("bookmarks.json")
-      .then(res => res.json())
-      .then(data => {
-        bookmarks = data;
-        renderTags();
-        renderGrid();
-      })
-      .catch(err => console.error("JSON 読み込みエラー:", err));
+	fetch("bookmarks.json", { cache: "no-store" })
+	  .then(res => res.json())
+	  .then(data => {
+	    bookmarks = data;
+	    renderTags();
+	    renderGrid();
+	  })
+ 	 .catch(err => console.error("JSON 読み込みエラー:", err));
 
     /* ▼ 更新日表示 */
     const fileInfoEl = document.getElementById("fileInfo");
