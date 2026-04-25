@@ -1,82 +1,410 @@
-﻿<!DOCTYPE HTML>
-
-<html>
-
+<!DOCTYPE html>
+<html lang="ja">
 <head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>My Bookmarks</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card: #1e293b;
+      --accent: #38bdf8;
+      --text: #e5e7eb;
+      --muted: #9ca3af;
+      --radius: 12px;
+    }
 
-<meta charset="utf-8">
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
-<title>My Mobile Bookmark</title>
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top, #1e293b 0, #020617 55%, #000 100%);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: stretch;
+      padding: 16px;
+    }
 
-<meta name="ROBOTS" content="NOINDEX,NOFOLLOW">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+    .app {
+      width: 100%;
+      max-width: 1100px;
+      margin: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
 
-<meta http-equiv="Pragma" content="no-cache">
-<meta http-equiv="Cache-Control" content="no-cache">
-<meta http-equiv="Expires" content="0">
+    header {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
 
-<link rel="stylesheet" href="http://code.jquery.com/mobile/1.1.0/jquery.mobile-1.1.0.min.css" />
+    .title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
 
-<link rel="shortcut icon" href="maruto.ico">
+    .logo {
+      width: 32px;
+      height: 32px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #38bdf8, #a855f7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 18px;
+    }
 
-<script src="http://code.jquery.com/jquery-1.6.4.min.js"></script>
+    h1 {
+      font-size: 20px;
+    }
 
-<script src="http://code.jquery.com/mobile/1.1.0/jquery.mobile-1.1.0.min.js"></script>
+    .subtitle {
+      font-size: 12px;
+      color: var(--muted);
+    }
 
-<link rel="stylesheet" href="css/style.css" />
+    /* ← ここに追加：ファイル更新日表示 */
+    .file-info {
+      font-size: 11px;
+      color: #9ca3af;
+      margin-top: -6px;
+      margin-bottom: 4px;
+      padding-left: 4px;
+      user-select: none;
+    }
 
+    .search {
+      flex: 1;
+      min-width: 180px;
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    .search input {
+      width: 100%;
+      max-width: 260px;
+      padding: 8px 10px;
+      border-radius: 999px;
+      border: 1px solid #334155;
+      background: rgba(15, 23, 42, 0.9);
+      color: var(--text);
+      font-size: 13px;
+      outline: none;
+    }
+
+    .search input::placeholder {
+      color: #64748b;
+    }
+
+    main {
+      background: rgba(15, 23, 42, 0.9);
+      border-radius: 18px;
+      border: 1px solid #1f2937;
+      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.6);
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      backdrop-filter: blur(12px);
+    }
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .section-header h2 {
+      font-size: 14px;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: #9ca3af;
+    }
+
+    .tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .tag {
+      font-size: 11px;
+      padding: 4px 8px;
+      border-radius: 999px;
+      border: 1px solid #1f2937;
+      background: #020617;
+      color: #9ca3af;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .tag.active {
+      border-color: var(--accent);
+      color: var(--accent);
+      background: rgba(56, 189, 248, 0.1);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 12px;
+    }
+
+    .card {
+      position: relative;
+      background: radial-gradient(circle at top left, #1f2937 0, #020617 70%);
+      border-radius: var(--radius);
+      padding: 12px;
+      border: 1px solid #1f2937;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      cursor: pointer;
+      transition: transform 0.12s ease-out, box-shadow 0.12s ease-out, border-color 0.12s;
+    }
+
+    .card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px rgba(15, 23, 42, 0.9);
+      border-color: var(--accent);
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .favicon {
+      width: 22px;
+      height: 22px;
+      border-radius: 6px;
+      background: #020617;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      border: 1px solid #1f2937;
+      overflow: hidden;
+    }
+
+    .favicon img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .card-title {
+      font-size: 13px;
+      font-weight: 600;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .card-url {
+      font-size: 11px;
+      color: #6b7280;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .card-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 10px;
+      color: #6b7280;
+    }
+
+    .badge {
+      padding: 2px 6px;
+      border-radius: 999px;
+      border: 1px solid #1f2937;
+      background: #020617;
+    }
+
+    .pin {
+      position: absolute;
+      top: 6px;
+      right: 6px;
+      font-size: 11px;
+      color: #facc15;
+    }
+
+    @media (min-width: 768px) {
+      main {
+        padding: 20px;
+      }
+      h1 {
+        font-size: 22px;
+      }
+      .grid {
+        gap: 14px;
+      }
+    }
+  </style>
 </head>
+<body>
+  <div class="app">
+    <header>
+      <div class="title">
+        <div class="logo">B</div>
+        <div>
+          <h1>My Bookmark Board</h1>
+          <div class="subtitle">スマホでもPCでも同じ感覚で使えるスタートページ</div>
+        </div>
+      </div>
+      <div class="search">
+        <input id="searchInput" type="search" placeholder="ブックマークを検索…" />
+      </div>
+    </header>
 
+    <!-- ★ 追加：ファイル保存日（自動） -->
+    <div id="fileInfo" class="file-info"></div>
 
+    <main>
+      <div class="section-header">
+        <h2>Collections</h2>
+        <div class="tags" id="tagBar"></div>
+      </div>
 
-<body class="bg1">
+      <section class="grid" id="bookmarkGrid"></section>
+    </main>
+  </div>
 
+  <script>
+    // ====== データ定義 ======
+    const bookmarks = [
+      { title: "Google", url: "https://www.google.com", tag: "Search", pinned: true },
+      { title: "YouTube", url: "https://www.youtube.com", tag: "Media", pinned: true },
+      { title: "GitHub", url: "https://github.com", tag: "Dev" },
+      { title: "MDN Web Docs", url: "https://developer.mozilla.org", tag: "Dev" },
+      { title: "Qiita", url: "https://qiita.com", tag: "Dev" },
+      { title: "Twitter / X", url: "https://x.com", tag: "Social" },
+      { title: "はてなブックマーク", url: "https://b.hatena.ne.jp/", tag: "Social" },
+      { title: "Amazon", url: "https://www.amazon.co.jp", tag: "Shopping" }
+    ];
 
-<div data-role="page" id="top" data-theme="f">
+    // ====== 状態 ======
+    let activeTag = "All";
+    let searchKeyword = "";
 
+    // ====== ユーティリティ ======
+    function getDomain(url) {
+      try {
+        return new URL(url).hostname.replace("www.", "");
+      } catch {
+        return url;
+      }
+    }
 
-<div data-role="header" data-theme="f">
+    function getFaviconUrl(url) {
+      try {
+        const u = new URL(url);
+        return `${u.origin}/favicon.ico`;
+      } catch {
+        return "";
+      }
+    }
 
-<h1>My Mobile Bookmark</h1>
+    // ====== 描画 ======
+    const gridEl = document.getElementById("bookmarkGrid");
+    const tagBarEl = document.getElementById("tagBar");
+    const searchInputEl = document.getElementById("searchInput");
 
-</div>
+    function renderTags() {
+      const tags = ["All", ...new Set(bookmarks.map(b => b.tag))];
+      tagBarEl.innerHTML = "";
+      tags.forEach(tag => {
+        const btn = document.createElement("button");
+        btn.textContent = tag;
+        btn.className = "tag" + (tag === activeTag ? " active" : "");
+        btn.addEventListener("click", () => {
+          activeTag = tag;
+          renderTags();
+          renderGrid();
+        });
+        tagBarEl.appendChild(btn);
+      });
+    }
 
+    function renderGrid() {
+      gridEl.innerHTML = "";
 
-<div data-role="content">
+      const filtered = bookmarks
+        .filter(b => activeTag === "All" || b.tag === activeTag)
+        .filter(b =>
+          !searchKeyword ||
+          b.title.toLowerCase().includes(searchKeyword) ||
+          b.url.toLowerCase().includes(searchKeyword)
+        )
+        .sort((a, b) => (b.pinned === true) - (a.pinned === true));
 
-<ul data-role="listview" data-inset="true" data-theme="c" data-dividertheme="g">
+      filtered.forEach(b => {
+        const card = document.createElement("article");
+        card.className = "card";
+        card.addEventListener("click", () => {
+          window.open(b.url, "_blank");
+        });
 
-<li data-role="list-divider"><center>メインメニュー</center></li>
+        const faviconUrl = getFaviconUrl(b.url);
 
-<li><a href="1.html"><br>【Traffic】バス・電車・旅行関係</a></li>
+        card.innerHTML = `
+          ${b.pinned ? '<div class="pin">★</div>' : ""}
+          <div class="card-header">
+            <div class="favicon">
+              ${faviconUrl ? `<img src="${faviconUrl}" alt="">` : `<span>${b.title[0] ?? "?"}</span>`}
+            </div>
+            <div>
+              <div class="card-title" title="${b.title}">${b.title}</div>
+              <div class="card-url" title="${b.url}">${getDomain(b.url)}</div>
+            </div>
+          </div>
+          <div class="card-footer">
+            <span class="badge">${b.tag}</span>
+            <span>開く</span>
+          </div>
+        `;
 
-<li><a href="2.html"><br>【Credit・Money・Asset】資産関係</a></li>
+        gridEl.appendChild(card);
+      });
+    }
 
-<li><a href="3.html"><br>【Health・Local】健康、地元関係</p></a></li>
+    // ====== 検索 ======
+    searchInputEl.addEventListener("input", e => {
+      searchKeyword = e.target.value.trim().toLowerCase();
+      renderGrid();
+    });
 
-<li><a href="4.html"><br>【Shopping・Gourmet】買い物、グルメ関係</a></li>
+    // ====== ファイル保存日（最終更新日）を自動表示 ======
+    const fileInfoEl = document.getElementById("fileInfo");
+    const modified = new Date(document.lastModified);
 
-<li><a href="5.html"><br>【IT】IT系Skill＆Works</a></li>
+    const y = modified.getFullYear();
+    const m = String(modified.getMonth() + 1).padStart(2, "0");
+    const d = String(modified.getDate()).padStart(2, "0");
 
-<li><a href="6.html"><br>【Junk】他人様のTwitter、読み物系</a></li>
+    fileInfoEl.textContent = `Updated: ${y}-${m}-${d}`;
 
-</ul>
-
-
-</div>
-
-
-<div data-role="footer" data-theme="f"  id="hoge">
-<small>
-Version:20240831<br>
-Revised and Updated on 2024/08/31
-</small>
-</div>
-
-
-</div>
-
-
+    // ====== 初期化 ======
+    renderTags();
+    renderGrid();
+  </script>
 </body>
-
 </html>
