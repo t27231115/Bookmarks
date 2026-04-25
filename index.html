@@ -1,16 +1,14 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<link rel="shortcut icon" href="maruto.ico">
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>My Bookmarks</title>
   
-   <!-- ★ オリジナルアイコン設定 -->
+  <!-- ★ オリジナルアイコン設定 -->
   <link rel="icon" type="image/png" sizes="32x32" href="maruto.png">
   <link rel="icon" type="image/png" sizes="192x192" href="maruto.png">
- 
- 
+
   <style>
     :root {
       --bg: #0f172a;
@@ -82,7 +80,6 @@
       color: var(--muted);
     }
 
-    /* ← ここに追加：ファイル更新日表示 */
     .file-info {
       font-size: 11px;
       color: #9ca3af;
@@ -165,12 +162,14 @@
       background: rgba(56, 189, 248, 0.1);
     }
 
+    /* ▼▼▼ COLLECTION を縦並びに変更 ▼▼▼ */
     .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      display: flex;
+      flex-direction: column;
       gap: 12px;
     }
 
+    /* カード幅を中央に寄せて読みやすく */
     .card {
       position: relative;
       background: radial-gradient(circle at top left, #1f2937 0, #020617 70%);
@@ -182,6 +181,8 @@
       gap: 8px;
       cursor: pointer;
       transition: transform 0.12s ease-out, box-shadow 0.12s ease-out, border-color 0.12s;
+      max-width: 600px;
+      margin: 0 auto;
     }
 
     .card:hover {
@@ -267,6 +268,7 @@
     }
   </style>
 </head>
+
 <body>
   <div class="app">
     <header>
@@ -282,7 +284,6 @@
       </div>
     </header>
 
-    <!-- ★ 追加：ファイル保存日（自動） -->
     <div id="fileInfo" class="file-info"></div>
 
     <main>
@@ -296,7 +297,6 @@
   </div>
 
   <script>
-    // ====== データ定義 ======
     const bookmarks = [
       { title: "【通勤】西武バス（往路）", url: "https://transfer-cloud.navitime.biz/seibubus/transfers?origin=00110690&destination=00113434", tag: "Bus", pinned: true },
       { title: "【通勤】西武バス（復路）", url: "https://transfer-cloud.navitime.biz/seibubus/transfers?origin=00113434&destination=00110690", tag: "Bus", pinned: true },
@@ -304,11 +304,9 @@
       { title: "Amazon", url: "https://www.amazon.co.jp", tag: "Shopping" }
     ];
 
-    // ====== 状態 ======
     let activeTag = "All";
     let searchKeyword = "";
 
-    // ====== ユーティリティ ======
     function getDomain(url) {
       try {
         return new URL(url).hostname.replace("www.", "");
@@ -326,7 +324,6 @@
       }
     }
 
-    // ====== 描画 ======
     const gridEl = document.getElementById("bookmarkGrid");
     const tagBarEl = document.getElementById("tagBar");
     const searchInputEl = document.getElementById("searchInput");
@@ -389,13 +386,11 @@
       });
     }
 
-    // ====== 検索 ======
     searchInputEl.addEventListener("input", e => {
       searchKeyword = e.target.value.trim().toLowerCase();
       renderGrid();
     });
 
-    // ====== ファイル保存日（最終更新日）を自動表示 ======
     const fileInfoEl = document.getElementById("fileInfo");
     const modified = new Date(document.lastModified);
 
@@ -405,7 +400,6 @@
 
     fileInfoEl.textContent = `Updated: ${y}-${m}-${d}`;
 
-    // ====== 初期化 ======
     renderTags();
     renderGrid();
   </script>
