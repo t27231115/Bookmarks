@@ -1,0 +1,17 @@
+[
+  {
+    "title": "Google",
+    "url": "https://www.google.com",
+    "tag": "Search"
+  },
+  {
+    "title": "GitHub",
+    "url": "https://github.com",
+    "tag": "Dev"
+  },
+  {
+    "title": "Yahoo Japan",
+    "url": "https://www.yahoo.co.jp",
+    "tag": "News"
+  }
+]
