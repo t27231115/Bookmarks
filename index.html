@@ -384,19 +384,22 @@
     /* ▼ JSON を読み込んでから描画開始 */
 	fetch("bookmarks.json", { cache: "no-store" })
 	  .then(res => {
-	    // ▼ JSON の更新日時を取得
+	  	 // ▼ JSON の更新日時を取得
 	    const lastModified = res.headers.get("Last-Modified");
-	
+
 	    if (lastModified) {
 	      const date = new Date(lastModified);
+	
 	      const y = date.getFullYear();
 	      const m = String(date.getMonth() + 1).padStart(2, "0");
 	      const d = String(date.getDate()).padStart(2, "0");
+	      const hh = String(date.getHours()).padStart(2, "0");
+	      const mm = String(date.getMinutes()).padStart(2, "0");
 
 	      document.getElementById("fileInfo").textContent =
-	        `Updated: ${y}-${m}-${d}`;
+	        `Updated: ${y}-${m}-${d} ${hh}:${mm}`;
 	    }
-	
+
 	    return res.json();
 	  })
 	  .then(data => {
@@ -405,6 +408,7 @@
 	    renderGrid();
 	  })
 	  .catch(err => console.error("JSON 読み込みエラー:", err));
+
 
 
    /* ▼ 更新日表示 */
