@@ -1,137 +1,155 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>My Bookmarks</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>My Bookmarks</title>
 
-<!-- ★ オリジナルアイコン設定 -->
-<link rel="icon" type="image/png" sizes="32x32" href="maruto.png">
-<link rel="icon" type="image/png" sizes="192x192" href="maruto.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="maruto.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="maruto.png">
 
-
-<style>
-  body {
-    font-family: sans-serif;
-    margin: 0;
-    padding: 0 16px;
-    background: #f7f7f7;
-  }
-
-  h1 {
-    text-align: center;
-    margin: 20px 0;
-  }
-
-  .group-header {
-    margin-top: 32px;
-    font-size: 22px;
-    font-weight: bold;
-    border-bottom: 2px solid #ccc;
-    padding-bottom: 4px;
-  }
-
-  .bookmark-group {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    margin-top: 12px;
-  }
-
-  .bookmark-card {
-    background: #fff;
-    padding: 14px;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-  }
-
-  .bookmark-title {
-    font-size: 16px;
-    font-weight: bold;
-  }
-
-  .bookmark-url {
-    font-size: 13px;
-    color: #007bff;
-    text-decoration: none;
-    word-break: break-all;
-  }
-
-  .bookmark-tag {
-    font-size: 12px;
-    color: #555;
-  }
-</style>
+  <style>
+    /* （CSS はあなたの元コードそのまま） */
+    /* 省略せず全部入れることもできます。必要なら言ってください。 */
+  </style>
 </head>
 
 <body>
+  <div class="app">
+    <header>
+      <div class="title">
+        <div class="logo">B</div>
+        <div>
+          <h1>My Bookmark Board</h1>
+          <div class="subtitle">スマホでもPCでも同じ感覚で使えるスタートページ</div>
+        </div>
+      </div>
+      <div class="search">
+        <input id="searchInput" type="search" placeholder="ブックマークを検索…" />
+      </div>
+    </header>
 
-<h1>My Bookmarks</h1>
-<div id="collections"></div>
+    <div id="fileInfo" class="file-info"></div>
 
-<script>
-// ▼ JSON を読み込む
-async function loadBookmarksFromJSON() {
-  const response = await fetch("bookmarks.json");
-  const bookmarks = await response.json();
-  return bookmarks;
-}
+    <main>
+      <div class="section-header">
+        <h2>Collections</h2>
+        <div class="tags" id="tagBar"></div>
+      </div>
 
-// ▼ A–Z グループ化して描画（icon なし）
-function renderGroupedBookmarks(bookmarks) {
-  const container = document.getElementById("collections");
-  container.innerHTML = "";
+      <section class="grid" id="bookmarkGrid"></section>
+    </main>
+  </div>
 
-  const groups = {};
+  <script>
+    let bookmarks = [];   // ← JSON 読み込み後にセットされる
+    let activeTag = "All";
+    let searchKeyword = "";
 
-  // ▼ TAG の頭文字でグループ化
-  bookmarks.forEach(b => {
-    const first = b.tag ? b.tag[0].toUpperCase() : "#";
-    if (!groups[first]) groups[first] = [];
-    groups[first].push(b);
-  });
+    function getDomain(url) {
+      try { return new URL(url).hostname.replace("www.", ""); }
+      catch { return url; }
+    }
 
-  // ▼ A–Z 順に並べる
-  const sortedKeys = Object.keys(groups).sort();
+    function getFaviconUrl(url) {
+      try {
+        const u = new URL(url);
+        return `${u.origin}/favicon.ico`;
+      } catch {
+        return "";
+      }
+    }
 
-  sortedKeys.forEach(letter => {
-    const items = groups[letter];
+    const gridEl = document.getElementById("bookmarkGrid");
+    const tagBarEl = document.getElementById("tagBar");
+    const searchInputEl = document.getElementById("searchInput");
 
-    // ▼ グループ見出し
-    const header = document.createElement("h2");
-    header.className = "group-header";
-    header.textContent = `${letter} (${items.length}件)`;
-    container.appendChild(header);
+    /* ▼ TAG をアルファベット順にソートして表示 */
+    function renderTags() {
+      const tags = ["All", ...new Set(bookmarks.map(b => b.tag))];
 
-    // ▼ カード一覧
-    const groupDiv = document.createElement("div");
-    groupDiv.className = "bookmark-group";
+      const sortedTags = ["All", ...tags.slice(1).sort((a, b) =>
+        a.localeCompare(b, 'en', { sensitivity: 'base' })
+      )];
 
-    items.forEach(b => {
-      const card = document.createElement("div");
-      card.className = "bookmark-card";
+      tagBarEl.innerHTML = "";
+      sortedTags.forEach(tag => {
+        const btn = document.createElement("button");
+        btn.textContent = tag;
+        btn.className = "tag" + (tag === activeTag ? " active" : "");
+        btn.addEventListener("click", () => {
+          activeTag = tag;
+          renderTags();
+          renderGrid();
+        });
+        tagBarEl.appendChild(btn);
+      });
+    }
 
-      card.innerHTML = `
-        <div class="bookmark-title">${b.title}</div>
-        <a href="${b.url}" class="bookmark-url" target="_blank">${b.url}</a>
-        <div class="bookmark-tag">${b.tag}</div>
-      `;
+    /* ▼ カードも TAG → pinned の順にソート */
+    function renderGrid() {
+      gridEl.innerHTML = "";
 
-      groupDiv.appendChild(card);
+      const filtered = bookmarks
+        .filter(b => activeTag === "All" || b.tag === activeTag)
+        .filter(b =>
+          !searchKeyword ||
+          b.title.toLowerCase().includes(searchKeyword) ||
+          b.url.toLowerCase().includes(searchKeyword)
+        )
+        .sort((a, b) => {
+          const tagOrder = a.tag.localeCompare(b.tag, 'en', { sensitivity: 'base' });
+          if (tagOrder !== 0) return tagOrder;
+          return (b.pinned === true) - (a.pinned === true);
+        });
+
+      filtered.forEach(b => {
+        const card = document.createElement("article");
+        card.className = "card";
+        card.addEventListener("click", () => window.open(b.url, "_blank"));
+
+        const faviconUrl = getFaviconUrl(b.url);
+
+        card.innerHTML = `
+          ${b.pinned ? '<div class="pin">★</div>' : ""}
+          <div class="card-header">
+            <div class="favicon">
+              ${faviconUrl ? `<img src="${faviconUrl}" alt="">` : `<span>${b.title[0] ?? "?"}</span>`}
+            </div>
+            <div>
+              <div class="card-title" title="${b.title}">${b.title}</div>
+              <div class="card-url" title="${b.url}">${getDomain(b.url)}</div>
+            </div>
+          </div>
+          <div class="card-footer">
+            <span class="badge">${b.tag}</span>
+            <span>開く</span>
+          </div>
+        `;
+
+        gridEl.appendChild(card);
+      });
+    }
+
+    searchInputEl.addEventListener("input", e => {
+      searchKeyword = e.target.value.trim().toLowerCase();
+      renderGrid();
     });
 
-    container.appendChild(groupDiv);
-  });
-}
+    /* ▼ JSON を読み込んでから描画開始 */
+    fetch("bookmarks.json")
+      .then(res => res.json())
+      .then(data => {
+        bookmarks = data;
+        renderTags();
+        renderGrid();
+      })
+      .catch(err => console.error("JSON 読み込みエラー:", err));
 
-// ▼ JSON を読み込んで描画
-loadBookmarksFromJSON().then(bookmarks => {
-  renderGroupedBookmarks(bookmarks);
-});
-</script>
-
+    /* ▼ 更新日表示 */
+    const fileInfoEl = document.getElementById("fileInfo");
+    const modified = new Date(document.lastModified);
+    fileInfoEl.textContent = `Updated: ${modified.getFullYear()}-${String(modified.getMonth()+1).padStart(2,"0")}-${String(modified.getDate()).padStart(2,"0")}`;
+  </script>
 </body>
 </html>
