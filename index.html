@@ -341,55 +341,45 @@
       });
     }
 
-    /* ▼ カードも TAG → pinned の順にソート */
-    function renderGrid() {
-      gridEl.innerHTML = "";
+    /* ▼ カードはソートなし */
+function renderGrid() {
+  gridEl.innerHTML = "";
 
-      const filtered = bookmarks
-        .filter(b => activeTag === "All" || b.tag === activeTag)
-        .filter(b =>
-          !searchKeyword ||
-          b.title.toLowerCase().includes(searchKeyword) ||
-          b.url.toLowerCase().includes(searchKeyword)
-        )
-        .sort((a, b) => {
-          const tagOrder = a.tag.localeCompare(b.tag, 'en', { sensitivity: 'base' });
-          if (tagOrder !== 0) return tagOrder;
-          return (b.pinned === true) - (a.pinned === true);
-        });
+  const filtered = bookmarks
+    .filter(b => activeTag === "All" || b.tag === activeTag)
+    .filter(b =>
+      !searchKeyword ||
+      b.title.toLowerCase().includes(searchKeyword) ||
+      b.url.toLowerCase().includes(searchKeyword)
+    );
 
-      filtered.forEach(b => {
-        const card = document.createElement("article");
-        card.className = "card";
-        card.addEventListener("click", () => window.open(b.url, "_blank"));
+  filtered.forEach(b => {
+    const card = document.createElement("article");
+    card.className = "card";
+    card.addEventListener("click", () => window.open(b.url, "_blank"));
 
-        const faviconUrl = getFaviconUrl(b.url);
+    const faviconUrl = getFaviconUrl(b.url);
 
-        card.innerHTML = `
-          ${b.pinned ? '<div class="pin">★</div>' : ""}
-          <div class="card-header">
-            <div class="favicon">
-              ${faviconUrl ? `<img src="${faviconUrl}" alt="">` : `<span>${b.title[0] ?? "?"}</span>`}
-            </div>
-            <div>
-              <div class="card-title" title="${b.title}">${b.title}</div>
-              <div class="card-url" title="${b.url}">${getDomain(b.url)}</div>
-            </div>
-          </div>
-          <div class="card-footer">
-            <span class="badge">${b.tag}</span>
-            <span>開く</span>
-          </div>
-        `;
+    card.innerHTML = `
+      ${b.pinned ? '<div class="pin">★</div>' : ""}
+      <div class="card-header">
+        <div class="favicon">
+          ${faviconUrl ? `<img src="${faviconUrl}" alt="">` : `<span>${b.title[0] ?? "?"}</span>`}
+        </div>
+        <div>
+          <div class="card-title" title="${b.title}">${b.title}</div>
+          <div class="card-url" title="${b.url}">${getDomain(b.url)}</div>
+        </div>
+      </div>
+      <div class="card-footer">
+        <span class="badge">${b.tag}</span>
+        <span>開く</span>
+      </div>
+    `;
 
-        gridEl.appendChild(card);
-      });
-    }
-
-    searchInputEl.addEventListener("input", e => {
-      searchKeyword = e.target.value.trim().toLowerCase();
-      renderGrid();
-    });
+    gridEl.appendChild(card);
+  });
+}
 
     /* ▼ JSON を読み込んでから描画開始 */
 	fetch("bookmarks.json", { cache: "no-store" })
