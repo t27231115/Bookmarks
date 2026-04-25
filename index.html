@@ -342,56 +342,72 @@
     }
 
     /* ▼ カードはソートなし */
-function renderGrid() {
-  gridEl.innerHTML = "";
+	function renderGrid() {
+	  gridEl.innerHTML = "";
 
-  const filtered = bookmarks
-    .filter(b => activeTag === "All" || b.tag === activeTag)
-    .filter(b =>
-      !searchKeyword ||
-      b.title.toLowerCase().includes(searchKeyword) ||
-      b.url.toLowerCase().includes(searchKeyword)
-    );
+	  const filtered = bookmarks
+	    .filter(b => activeTag === "All" || b.tag === activeTag)
+	    .filter(b =>
+	      !searchKeyword ||
+	      b.title.toLowerCase().includes(searchKeyword) ||
+	      b.url.toLowerCase().includes(searchKeyword)
+	    );
 
-  filtered.forEach(b => {
-    const card = document.createElement("article");
-    card.className = "card";
-    card.addEventListener("click", () => window.open(b.url, "_blank"));
+	  filtered.forEach(b => {
+	    const card = document.createElement("article");
+	    card.className = "card";
+	    card.addEventListener("click", () => window.open(b.url, "_blank"));
 
-    const faviconUrl = getFaviconUrl(b.url);
+	    const faviconUrl = getFaviconUrl(b.url);	
 
-    card.innerHTML = `
-      ${b.pinned ? '<div class="pin">★</div>' : ""}
-      <div class="card-header">
-        <div class="favicon">
-          ${faviconUrl ? `<img src="${faviconUrl}" alt="">` : `<span>${b.title[0] ?? "?"}</span>`}
-        </div>
-        <div>
-          <div class="card-title" title="${b.title}">${b.title}</div>
-          <div class="card-url" title="${b.url}">${getDomain(b.url)}</div>
-        </div>
-      </div>
-      <div class="card-footer">
-        <span class="badge">${b.tag}</span>
-        <span>開く</span>
-      </div>
-    `;
+	    card.innerHTML = `
+	      ${b.pinned ? '<div class="pin">★</div>' : ""}
+	      <div class="card-header">
+	        <div class="favicon">
+	          ${faviconUrl ? `<img src="${faviconUrl}" alt="">` : `<span>${b.title[0] ?? "?"}</span>`}
+	        </div>
+	        <div>
+	          <div class="card-title" title="${b.title}">${b.title}</div>
+	          <div class="card-url" title="${b.url}">${getDomain(b.url)}</div>
+	        </div>
+	      </div>
+	      <div class="card-footer">
+	        <span class="badge">${b.tag}</span>
+	        <span>開く</span>
+	      </div>
+	    `;
 
-    gridEl.appendChild(card);
-  });
-}
+	    gridEl.appendChild(card);
+	  });
+	}
 
     /* ▼ JSON を読み込んでから描画開始 */
 	fetch("bookmarks.json", { cache: "no-store" })
-	  .then(res => res.json())
+	  .then(res => {
+	    // ▼ JSON の更新日時を取得
+	    const lastModified = res.headers.get("Last-Modified");
+	
+	    if (lastModified) {
+	      const date = new Date(lastModified);
+	      const y = date.getFullYear();
+	      const m = String(date.getMonth() + 1).padStart(2, "0");
+	      const d = String(date.getDate()).padStart(2, "0");
+
+	      document.getElementById("fileInfo").textContent =
+	        `Updated: ${y}-${m}-${d}`;
+	    }
+	
+	    return res.json();
+	  })
 	  .then(data => {
 	    bookmarks = data;
 	    renderTags();
 	    renderGrid();
 	  })
- 	 .catch(err => console.error("JSON 読み込みエラー:", err));
+	  .catch(err => console.error("JSON 読み込みエラー:", err));
 
-    /* ▼ 更新日表示 */
+
+   /* ▼ 更新日表示 */
     const fileInfoEl = document.getElementById("fileInfo");
     const modified = new Date(document.lastModified);
     fileInfoEl.textContent = `Updated: ${modified.getFullYear()}-${String(modified.getMonth()+1).padStart(2,"0")}-${String(modified.getDate()).padStart(2,"0")}`;
