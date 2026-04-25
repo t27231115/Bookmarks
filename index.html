@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>My Bookmarks</title>
+
+<!-- ★ オリジナルアイコン設定 -->
+<link rel="icon" type="image/png" sizes="32x32" href="maruto.png">
+<link rel="icon" type="image/png" sizes="192x192" href="maruto.png">
+
+
+<style>
+  body {
+    font-family: sans-serif;
+    margin: 0;
+    padding: 0 16px;
+    background: #f7f7f7;
+  }
+
+  h1 {
+    text-align: center;
+    margin: 20px 0;
+  }
+
+  .group-header {
+    margin-top: 32px;
+    font-size: 22px;
+    font-weight: bold;
+    border-bottom: 2px solid #ccc;
+    padding-bottom: 4px;
+  }
+
+  .bookmark-group {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 12px;
+  }
+
+  .bookmark-card {
+    background: #fff;
+    padding: 14px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .bookmark-title {
+    font-size: 16px;
+    font-weight: bold;
+  }
+
+  .bookmark-url {
+    font-size: 13px;
+    color: #007bff;
+    text-decoration: none;
+    word-break: break-all;
+  }
+
+  .bookmark-tag {
+    font-size: 12px;
+    color: #555;
+  }
+</style>
+</head>
+
+<body>
+
+<h1>My Bookmarks</h1>
+<div id="collections"></div>
+
+<script>
+// ▼ JSON を読み込む
+async function loadBookmarksFromJSON() {
+  const response = await fetch("bookmarks.json");
+  const bookmarks = await response.json();
+  return bookmarks;
+}
+
+// ▼ A–Z グループ化して描画（icon なし）
+function renderGroupedBookmarks(bookmarks) {
+  const container = document.getElementById("collections");
+  container.innerHTML = "";
+
+  const groups = {};
+
+  // ▼ TAG の頭文字でグループ化
+  bookmarks.forEach(b => {
+    const first = b.tag ? b.tag[0].toUpperCase() : "#";
+    if (!groups[first]) groups[first] = [];
+    groups[first].push(b);
+  });
+
+  // ▼ A–Z 順に並べる
+  const sortedKeys = Object.keys(groups).sort();
+
+  sortedKeys.forEach(letter => {
+    const items = groups[letter];
+
+    // ▼ グループ見出し
+    const header = document.createElement("h2");
+    header.className = "group-header";
+    header.textContent = `${letter} (${items.length}件)`;
+    container.appendChild(header);
+
+    // ▼ カード一覧
+    const groupDiv = document.createElement("div");
+    groupDiv.className = "bookmark-group";
+
+    items.forEach(b => {
+      const card = document.createElement("div");
+      card.className = "bookmark-card";
+
+      card.innerHTML = `
+        <div class="bookmark-title">${b.title}</div>
+        <a href="${b.url}" class="bookmark-url" target="_blank">${b.url}</a>
+        <div class="bookmark-tag">${b.tag}</div>
+      `;
+
+      groupDiv.appendChild(card);
+    });
+
+    container.appendChild(groupDiv);
+  });
+}
+
+// ▼ JSON を読み込んで描画
+loadBookmarksFromJSON().then(bookmarks => {
+  renderGroupedBookmarks(bookmarks);
+});
+</script>
+
+</body>
+</html>
