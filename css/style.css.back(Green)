@@ -1,0 +1,127 @@
+﻿/* F
+-----------------------------------------------------------------------------------------------------------*/
+
+.ui-bar-f {
+	border: 1px solid 		#eeeeee;
+	background: 			#e1e1e1;
+	color: 					#000000;
+	font-weight: bold;
+	text-shadow: 0 -1px 1px #eeeeee;
+	background-image: -webkit-gradient(linear, left top, left bottom, from( #ffffff), to( #e1e1e1));
+	background-image: -webkit-linear-gradient(#ffffff, #e1e1e1);
+	background-image:    -moz-linear-gradient(#ffffff, #e1e1e1);
+	background-image:     -ms-linear-gradient(#ffffff, #e1e1e1);
+	background-image:      -o-linear-gradient(#ffffff, #e1e1e1);
+	background-image:         linear-gradient(#ffffff, #e1e1e1);
+}
+.ui-btn-up-f {
+	text-decoration: none;
+	border: 1px solid 		#eeeeee;
+	background: 			#e1e1e1;
+	font-weight: bold;
+	color: 					#000000;
+	text-shadow: 0 -1px 1px #eeeeee;
+	background-image: -webkit-gradient(linear, left top, left bottom, from( #ffffff), to( #e1e1e1));
+	background-image: -webkit-linear-gradient(#ffffff, #e1e1e1);
+	background-image:    -moz-linear-gradient(#ffffff, #e1e1e1);
+	background-image:     -ms-linear-gradient(#ffffff, #e1e1e1);
+	background-image:      -o-linear-gradient(#ffffff, #e1e1e1);
+	background-image:         linear-gradient(#ffffff, #e1e1e1);
+}
+.ui-btn-hover-f,
+.ui-btn-down-f,
+.ui-body-f .ui-btn-active {
+	text-decoration: none;
+	border: 1px solid 		#eeeeee;
+	background: 			#e1e1e1;
+	font-weight: bold;
+	color: 					#000000;
+	text-shadow: 0 -1px 1px #eeeeee;
+	background-image: -webkit-gradient(linear, left top, left bottom, from( #e1e1e1), to( #ffffff));
+	background-image: -webkit-linear-gradient(#e1e1e1, #ffffff);
+	background-image:    -moz-linear-gradient(#e1e1e1, #ffffff);
+	background-image:     -ms-linear-gradient(#e1e1e1, #ffffff);
+	background-image:      -o-linear-gradient(#e1e1e1, #ffffff);
+	background-image:         linear-gradient(#e1e1e1, #ffffff);
+}
+
+/* G
+-----------------------------------------------------------------------------------------------------------*/
+.ui-bar-g {
+	border: 1px solid 		#121212;
+	background: 			#000000;
+	color: 					#ffffff;
+	font-weight: bold;
+	text-shadow: 0 -1px 1px #121212;
+	background-image: -webkit-gradient(linear, left top, left bottom, from( #363636), to( #000000));
+	background-image: -webkit-linear-gradient(#363636, #000000);
+	background-image:    -moz-linear-gradient(#363636, #000000);
+	background-image:     -ms-linear-gradient(#363636, #000000);
+	background-image:      -o-linear-gradient(#363636, #000000);
+	background-image:         linear-gradient(#363636, #000000);
+}
+
+/* 他
+-----------------------------------------------------------------------------------------------------------*/
+#new dl, #new dt, #new dd {
+	margin: 0px;
+	padding: 0px;
+}
+#new dt {
+	font-weight: bold;
+}
+#new dd {
+	border-bottom: 1px solid #999;
+}
+h2 {
+	font-size: 1.2em;
+	color: #c2a951;
+}
+h2::before {
+	margin: 5px;
+	content: "■";
+}
+.ui-footer {
+	text-align: center;
+}
+.ui-footer a {
+	color: #000 !important;
+	font-weight: normal;
+	text-decoration: none;
+}
+.ui-header h1 {
+	font-size: 1.8em;
+	margin-left:0 !important;
+	margin-right:0 !important;
+}
+.ui-header a {
+	color: #000 !important;
+}
+.bg1 {
+	background: #5e703d;
+	color: #FFF;
+}
+.bg1 a {
+	color: #FFF;
+}
+.ui-content h3 a {
+	color: #000;
+}
+#room .ui-li-thumb {
+	padding-top: 0.5em;
+	padding-left: 0.5em;
+}
+#room h3, #room p {
+	overflow: visible;
+	white-space: normal;
+}
+#googlemap {
+	width: 100%;
+	height: 300px;
+	border: 8px solid #ccc;
+	-webkit-box-sizing: border-box; 
+	box-sizing: border-box;
+}
+.tel {
+	font-size: 2em;
+}
