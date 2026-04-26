@@ -33,6 +33,9 @@
       justify-content: center;
       align-items: stretch;
       padding: 16px;
+
+      /* ▼ 固定ヘッダーと重ならないように余白を追加 */
+      padding-top: 90px;
     }
 
     .app {
@@ -44,7 +47,16 @@
       gap: 16px;
     }
 
+    /* ▼ ヘッダーを固定（sticky）にする */
     header {
+      position: sticky;
+      top: 0;
+      z-index: 9999;
+      background: rgba(15, 23, 42, 0.85);
+      backdrop-filter: blur(10px);
+      padding: 12px 0;
+      border-bottom: 1px solid #1f2937;
+
       display: flex;
       flex-wrap: wrap;
       align-items: center;
@@ -161,14 +173,12 @@
       background: rgba(56, 189, 248, 0.1);
     }
 
-    /* ▼ COLLECTION を縦並びに変更 */
     .grid {
       display: flex;
       flex-direction: column;
       gap: 12px;
     }
 
-    /* ▼ カード幅を画面の80%に統一してセンタリング */
     .card {
       position: relative;
       background: radial-gradient(circle at top left, #1f2937 0, #020617 70%);
@@ -297,7 +307,7 @@
   </div>
 
   <script>
-    let bookmarks = [];   // ← JSON 読み込み後にセットされる
+    let bookmarks = [];
     let activeTag = "All";
     let searchKeyword = "";
 
@@ -319,7 +329,6 @@
     const tagBarEl = document.getElementById("tagBar");
     const searchInputEl = document.getElementById("searchInput");
 
-    /* ▼ TAG をアルファベット順にソートして表示 */
     function renderTags() {
       const tags = ["All", ...new Set(bookmarks.map(b => b.tag))];
 
@@ -341,77 +350,71 @@
       });
     }
 
-    /* ▼ カードはソートなし */
-	function renderGrid() {
-	  gridEl.innerHTML = "";
+    function renderGrid() {
+      gridEl.innerHTML = "";
 
-	  const filtered = bookmarks
-	    .filter(b => activeTag === "All" || b.tag === activeTag)
-	    .filter(b =>
-	      !searchKeyword ||
-	      b.title.toLowerCase().includes(searchKeyword) ||
-	      b.url.toLowerCase().includes(searchKeyword)
-	    );
+      const filtered = bookmarks
+        .filter(b => activeTag === "All" || b.tag === activeTag)
+        .filter(b =>
+          !searchKeyword ||
+          b.title.toLowerCase().includes(searchKeyword) ||
+          b.url.toLowerCase().includes(searchKeyword)
+        );
 
-	  filtered.forEach(b => {
-	    const card = document.createElement("article");
-	    card.className = "card";
-	    card.addEventListener("click", () => window.open(b.url, "_blank"));
+      filtered.forEach(b => {
+        const card = document.createElement("article");
+        card.className = "card";
+        card.addEventListener("click", () => window.open(b.url, "_blank"));
 
-	    const faviconUrl = getFaviconUrl(b.url);	
+        const faviconUrl = getFaviconUrl(b.url);
 
-	    card.innerHTML = `
-	      ${b.pinned ? '<div class="pin">★</div>' : ""}
-	      <div class="card-header">
-	        <div class="favicon">
-	          ${faviconUrl ? `<img src="${faviconUrl}" alt="">` : `<span>${b.title[0] ?? "?"}</span>`}
-	        </div>
-	        <div>
-	          <div class="card-title" title="${b.title}">${b.title}</div>
-	          <div class="card-url" title="${b.url}">${getDomain(b.url)}</div>
-	        </div>
-	      </div>
-	      <div class="card-footer">
-	        <span class="badge">${b.tag}</span>
-	        <span>開く</span>
-	      </div>
-	    `;
+        card.innerHTML = `
+          ${b.pinned ? '<div class="pin">★</div>' : ""}
+          <div class="card-header">
+            <div class="favicon">
+              ${faviconUrl ? `<img src="${faviconUrl}" alt="">` : `<span>${b.title[0] ?? "?"}</span>`}
+            </div>
+            <div>
+              <div class="card-title" title="${b.title}">${b.title}</div>
+              <div class="card-url" title="${b.url}">${getDomain(b.url)}</div>
+            </div>
+          </div>
+          <div class="card-footer">
+            <span class="badge">${b.tag}</span>
+            <span>開く</span>
+          </div>
+        `;
 
-	    gridEl.appendChild(card);
-	  });
-	}
+        gridEl.appendChild(card);
+      });
+    }
 
-    /* ▼ JSON を読み込んでから描画開始 */
-	fetch("bookmarks.json", { cache: "no-store" })
-	  .then(res => {
-	  	 // ▼ JSON の更新日時を取得
-	    const lastModified = res.headers.get("Last-Modified");
+    fetch("bookmarks.json", { cache: "no-store" })
+      .then(res => {
+        const lastModified = res.headers.get("Last-Modified");
 
-	    if (lastModified) {
-	      const date = new Date(lastModified);
-	
-	      const y = date.getFullYear();
-	      const m = String(date.getMonth() + 1).padStart(2, "0");
-	      const d = String(date.getDate()).padStart(2, "0");
-	      const hh = String(date.getHours()).padStart(2, "0");
-	      const mm = String(date.getMinutes()).padStart(2, "0");
+        if (lastModified) {
+          const date = new Date(lastModified);
 
-	      document.getElementById("fileInfo").textContent =
-	        `Updated: ${y}-${m}-${d} ${hh}:${mm}`;
-	    }
+          const y = date.getFullYear();
+          const m = String(date.getMonth() + 1).padStart(2, "0");
+          const d = String(date.getDate()).padStart(2, "0");
+          const hh = String(date.getHours()).padStart(2, "0");
+          const mm = String(date.getMinutes()).padStart(2, "0");
 
-	    return res.json();
-	  })
-	  .then(data => {
-	    bookmarks = data;
-	    renderTags();
-	    renderGrid();
-	  })
-	  .catch(err => console.error("JSON 読み込みエラー:", err));
+          document.getElementById("fileInfo").textContent =
+            `Updated: ${y}-${m}-${d} ${hh}:${mm}`;
+        }
 
+        return res.json();
+      })
+      .then(data => {
+        bookmarks = data;
+        renderTags();
+        renderGrid();
+      })
+      .catch(err => console.error("JSON 読み込みエラー:", err));
 
-
-   /* ▼ 更新日表示 */
     const fileInfoEl = document.getElementById("fileInfo");
     const modified = new Date(document.lastModified);
     fileInfoEl.textContent = `Updated: ${modified.getFullYear()}-${String(modified.getMonth()+1).padStart(2,"0")}-${String(modified.getDate()).padStart(2,"0")}`;
