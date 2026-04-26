@@ -47,27 +47,30 @@
       gap: 16px;
     }
 
-    /* ▼ ヘッダーを固定（sticky）にする */
+    /* ▼ ヘッダーを固定（スマホで動かないように高さ固定） */
     header {
       position: sticky;
       top: 0;
       z-index: 9999;
       background: rgba(15, 23, 42, 0.85);
       backdrop-filter: blur(10px);
-      padding: 12px 0;
       border-bottom: 1px solid #1f2937;
 
       display: flex;
-      flex-wrap: wrap;
+      flex-wrap: nowrap;   /* ← スマホで折り返さない */
       align-items: center;
       justify-content: space-between;
       gap: 12px;
+
+      height: 70px;        /* ← 高さを固定（これで上下に動かない） */
+      padding: 12px 0;
     }
 
     .title {
       display: flex;
       align-items: center;
       gap: 8px;
+      flex-shrink: 0; /* ← タイトルが潰れない */
     }
 
     .logo {
@@ -84,11 +87,13 @@
 
     h1 {
       font-size: 20px;
+      white-space: nowrap; /* ← スマホで折り返さない */
     }
 
     .subtitle {
       font-size: 12px;
       color: var(--muted);
+      white-space: nowrap;
     }
 
     .file-info {
@@ -102,9 +107,10 @@
 
     .search {
       flex: 1;
-      min-width: 180px;
+      min-width: 140px;
       display: flex;
       justify-content: flex-end;
+      flex-shrink: 0; /* ← 検索バーが下に落ちない */
     }
 
     .search input {
