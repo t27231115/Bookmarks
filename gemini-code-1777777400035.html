@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>My Bookmarks</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card: #1e293b;
+      --accent: #38bdf8;
+      --text: #e5e7eb;
+      --muted: #9ca3af;
+      --radius: 12px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      background: radial-gradient(circle at top, #1e293b 0, #020617 55%, #000 100%);
+      color: var(--text);
+      min-height: 100vh;
+      padding-top: 100px;
+      padding-left: 16px;
+      padding-right: 16px;
+      padding-bottom: 32px;
+      overflow-x: hidden; /* 横揺れを完全に防止 */
+    }
+
+    header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 80px;
+      z-index: 9999;
+      background: rgba(15, 23, 42, 0.85);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid #1f2937;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 0 16px;
+    }
+
+    .header-inner {
+      width: 100%;
+      max-width: 1100px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    h1 {
+      font-size: 18px;
+      white-space: nowrap;
+    }
+
+    .info-container {
+      width: 100%;
+      max-width: 1100px;
+      margin: 0 auto 10px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .file-info {
+      font-size: 10px;
+      color: var(--muted);
+      background: rgba(30, 41, 59, 0.5);
+      padding: 2px 8px;
+      border-radius: 4px;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    main {
+      width: 100%;
+      max-width: 1100px;
+      margin: 0 auto;
+      background: rgba(15, 23, 42, 0.8);
+      border-radius: 18px;
+      border: 1px solid #1f2937;
+      padding: 16px;
+      backdrop-filter: blur(12px);
+    }
+
+    .tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 16px;
+    }
+
+    .tag {
+      font-size: 11px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      border: 1px solid #1f2937;
+      background: #020617;
+      color: #9ca3af;
+      cursor: pointer;
+    }
+
+    .tag.active {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+      justify-items: center;
+    }
+
+    /* ▼ カードの修正ポイント */
+    .card {
+      position: relative;
+      background: radial-gradient(circle at top left, #1f2937 0, #020617 70%);
+      border-radius: var(--radius);
+      padding: 14px;
+      border: 1px solid #1f2937;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      cursor: pointer;
+      width: 100%;
+      max-width: 800px;
+      overflow: hidden; /* 子要素のはみ出しを隠す */
+    }
+
+    .card-title {
+      font-size: 14px;
+      font-weight: 600;
+      padding-right: 24px; /* ピンと重ならないように */
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* ▼ URLが横に突き抜けないための設定 */
+    .card-url {
+      font-size: 11px;
+      color: #6b7280;
+      white-space: nowrap;      /* 改行させない */
+      overflow: hidden;         /* はみ出た分を隠す */
+      text-overflow: ellipsis;  /* 末尾を「...」にする */
+      width: 100%;              /* 親の幅に合わせる */
+    }
+
+    .pin {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      font-size: 12px;
+      color: #facc15;
+    }
+
+    @media (max-width: 600px) {
+      header { height: 70px; }
+      body { padding-top: 85px; }
+      h1 { font-size: 16px; }
+      .search input { width: 120px; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="header-inner">
+      <div class="title">
+        <h1>My Bookmark Board</h1>
+      </div>
+      <div class="search">
+        <input id="searchInput" type="text" placeholder="検索..." style="padding:6px 12px; border-radius:20px; border:1px solid #334155; background:#0f172a; color:white; font-size:13px;">
+      </div>
+    </div>
+  </header>
+
+  <div class="info-container">
+    <div id="htmlInfo" class="file-info">HTML: Loading...</div>
+    <div id="jsonInfo" class="file-info">Bookmark: Loading...</div>
+  </div>
+
+  <main>
+    <div id="tagBar" class="tags"></div>
+    <section id="bookmarkGrid" class="grid"></section>
+  </main>
+
+  <script>
+    let bookmarks = [];
+    let activeTag = "All";
+    let searchKeyword = "";
+
+    // HTML更新日
+    const htmlDate = new Date(document.lastModified);
+    document.getElementById("htmlInfo").textContent = `HTML Updated: ${htmlDate.toLocaleString()}`;
+
+    // JSON読み込み
+    async function loadJSON() {
+      try {
+        const res = await fetch("bookmarks.json", { cache: "no-store" });
+        const json = await res.json();
+        
+        document.getElementById("jsonInfo").textContent = `Bookmark Updated: ${json.updated || '--'}`;
+        bookmarks = json.bookmarks || [];
+        
+        renderTags();
+        renderGrid();
+      } catch (e) {
+        console.error("Load error:", e);
+        document.getElementById("jsonInfo").textContent = "Bookmark: Error";
+      }
+    }
+
+    function renderTags() {
+      const tagBar = document.getElementById("tagBar");
+      const tags = ["All", ...new Set(bookmarks.map(b => b.tag))].sort();
+      tagBar.innerHTML = "";
+      tags.forEach(tag => {
+        const btn = document.createElement("button");
+        btn.textContent = tag;
+        btn.className = "tag" + (tag === activeTag ? " active" : "");
+        btn.onclick = () => { activeTag = tag; renderTags(); renderGrid(); };
+        tagBar.appendChild(btn);
+      });
+    }
+
+    function renderGrid() {
+      const grid = document.getElementById("bookmarkGrid");
+      grid.innerHTML = "";
+      
+      const filtered = bookmarks.filter(b => 
+        (activeTag === "All" || b.tag === activeTag) &&
+        (b.title.toLowerCase().includes(searchKeyword) || b.url.toLowerCase().includes(searchKeyword))
+      );
+
+      filtered.forEach(b => {
+        const card = document.createElement("article");
+        card.className = "card";
+        card.onclick = () => window.open(b.url, "_blank");
+        card.innerHTML = `
+          ${b.pinned ? '<span class="pin">★</span>' : ""}
+          <div class="card-title" title="${b.title}">${b.title}</div>
+          <div class="card-url">${b.url}</div>
+        `;
+        grid.appendChild(card);
+      });
+    }
+
+    document.getElementById("searchInput").oninput = (e) => {
+      searchKeyword = e.target.value.toLowerCase();
+      renderGrid();
+    };
+
+    loadJSON();
+  </script>
+</body>
+</html>
