@@ -1,5 +1,5 @@
 {
-  "updated": "2026-05-03 12:00",
+  "updated": "2026-05-03 12:08:56",
   "bookmarks": [
     {
       "title": "【通勤】西武バス（往路）",
@@ -71,6 +71,18 @@
       "title": "Tver",
       "url": "https://tver.jp/",
       "tag": "Media",
+      "pinned": false
+    },
+    {
+      "title": "UNIQLO",
+      "url": "https://www.uniqlo.com/",
+      "tag": "Fasion",
+      "pinned": false
+    },
+    {
+      "title": "GU",
+      "url": "https://www.gu-global.com/",
+      "tag": "Fasion",
       "pinned": false
     }
   ]
