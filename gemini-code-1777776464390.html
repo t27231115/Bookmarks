@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>My Bookmarks</title>
+
+  <link rel="icon" type="image/png" sizes="32x32" href="maruto.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="maruto.png">
+
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card: #1e293b;
+      --accent: #38bdf8;
+      --text: #e5e7eb;
+      --muted: #9ca3af;
+      --radius: 12px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top, #1e293b 0, #020617 55%, #000 100%);
+      color: var(--text);
+      min-height: 100vh;
+      padding-top: 100px;
+      padding-left: 16px;
+      padding-right: 16px;
+      padding-bottom: 32px;
+    }
+
+    .app {
+      width: 100%;
+      max-width: 1100px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 80px;
+      z-index: 9999;
+      background: rgba(15, 23, 42, 0.85);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid #1f2937;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 0 16px;
+    }
+
+    .header-inner {
+      width: 100%;
+      max-width: 1100px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+
+    .logo {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #38bdf8, #a855f7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 20px;
+      color: white;
+    }
+
+    h1 {
+      font-size: 18px;
+      white-space: nowrap;
+      line-height: 1.2;
+    }
+
+    .subtitle {
+      font-size: 11px;
+      color: var(--muted);
+      white-space: nowrap;
+    }
+
+    .info-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      padding-left: 4px;
+      margin-bottom: 4px;
+    }
+
+    .file-info {
+      font-size: 10px;
+      color: #9ca3af;
+      background: rgba(30, 41, 59, 0.5);
+      padding: 2px 8px;
+      border-radius: 4px;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      letter-spacing: 0.02em;
+    }
+
+    .search {
+      flex: 1;
+      display: flex;
+      justify-content: flex-end;
+      min-width: 120px;
+    }
+
+    .search input {
+      width: 100%;
+      max-width: 240px;
+      padding: 8px 14px;
+      border-radius: 999px;
+      border: 1px solid #334155;
+      background: rgba(15, 23, 42, 0.9);
+      color: var(--text);
+      font-size: 13px;
+      outline: none;
+    }
+
+    main {
+      background: rgba(15, 23, 42, 0.8);
+      border-radius: 18px;
+      border: 1px solid #1f2937;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      backdrop-filter: blur(12px);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+      justify-items: center;
+    }
+
+    .card {
+      background: radial-gradient(circle at top left, #1f2937 0, #020617 70%);
+      border-radius: var(--radius);
+      padding: 14px;
+      border: 1px solid #1f2937;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      cursor: pointer;
+      width: 100%;
+      max-width: 800px; 
+    }
+
+    .tag {
+      font-size: 11px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      border: 1px solid #1f2937;
+      background: #020617;
+      color: #9ca3af;
+      cursor: pointer;
+    }
+
+    .tag.active {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    @media (max-width: 600px) {
+      .subtitle { display: none; }
+      header { height: 70px; }
+      body { padding-top: 85px; }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="app">
+    <header>
+      <div class="header-inner">
+        <div class="title">
+          <div class="logo">B</div>
+          <div>
+            <h1>My Bookmark Board</h1>
+            <div class="subtitle">スタートページ</div>
+          </div>
+        </div>
+        <div class="search">
+          <input id="searchInput" type="search" placeholder="検索..." />
+        </div>
+      </div>
+    </header>
+
+    <div class="info-container">
+      <div id="htmlInfo" class="file-info">HTML Updated: Loading...</div>
+      <div id="jsonInfo" class="file-info">Bookmark Updated: Loading...</div>
+    </div>
+
+    <main>
+      <div class="section-header">
+        <div class="tags" id="tagBar"></div>
+      </div>
+      <section class="grid" id="bookmarkGrid"></section>
+    </main>
+  </div>
+
+  <script>
+    let bookmarks = [];
+    let activeTag = "All";
+    let searchKeyword = "";
+
+    // 日付を「YYYY-MM-DD HH:mm」形式にする関数
+    function formatDate(date) {
+      if (!date || isNaN(date.getTime())) return "--";
+      const y = date.getFullYear();
+      const m = String(date.getMonth() + 1).padStart(2, "0");
+      const d = String(date.getDate()).padStart(2, "0");
+      const hh = String(date.getHours()).padStart(2, "0");
+      const mm = String(date.getMinutes()).padStart(2, "0");
+      return `${y}-${m}-${d} ${hh}:${mm}`;
+    }
+
+    // 1. HTMLの更新日（これは document.lastModified を使用）
+    const htmlLastMod = new Date(document.lastModified);
+    document.getElementById("htmlInfo").textContent = `HTML Updated: ${formatDate(htmlLastMod)}`;
+
+    // 2. JSONの更新日取得（サーバー通信時のみ正確に取得可能）
+    fetch("bookmarks.json", { cache: "no-store" })
+      .then(res => {
+        const jsonLastModHeader = res.headers.get("Last-Modified");
+        if (jsonLastModHeader) {
+          document.getElementById("jsonInfo").textContent = `Bookmark Updated: ${formatDate(new Date(jsonLastModHeader))}`;
+        } else {
+          // ローカル環境やサーバー設定で取れない場合
+          document.getElementById("jsonInfo").textContent = `Bookmark Updated: (Fetch Success)`;
+        }
+        return res.json();
+      })
+      .then(data => {
+        bookmarks = data;
+        renderTags();
+        renderGrid();
+      })
+      .catch(() => {
+        document.getElementById("jsonInfo").textContent = `Bookmark Updated: Error`;
+      });
+
+    // --- 以下、描画ロジック（変更なし） ---
+    function renderTags() {
+      const tags = ["All", ...new Set(bookmarks.map(b => b.tag))].sort();
+      const tagBarEl = document.getElementById("tagBar");
+      tagBarEl.innerHTML = "";
+      tags.forEach(tag => {
+        const btn = document.createElement("button");
+        btn.textContent = tag;
+        btn.className = "tag" + (tag === activeTag ? " active" : "");
+        btn.onclick = () => { activeTag = tag; renderTags(); renderGrid(); };
+        tagBarEl.appendChild(btn);
+      });
+    }
+
+    function renderGrid() {
+      const gridEl = document.getElementById("bookmarkGrid");
+      gridEl.innerHTML = "";
+      bookmarks
+        .filter(b => (activeTag === "All" || b.tag === activeTag) && 
+                     (!searchKeyword || b.title.toLowerCase().includes(searchKeyword)))
+        .forEach(b => {
+          const card = document.createElement("article");
+          card.className = "card";
+          card.onclick = () => window.open(b.url, "_blank");
+          card.innerHTML = `<div class="card-title">${b.title}</div><div style="font-size:10px;color:#6b7280">${b.url}</div>`;
+          gridEl.appendChild(card);
+        });
+    }
+
+    document.getElementById("searchInput").oninput = (e) => {
+      searchKeyword = e.target.value.toLowerCase();
+      renderGrid();
+    };
+  </script>
+</body>
+</html>
