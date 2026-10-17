@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-06 12:57:56",
+  "updated": "2026-10-18 06:17:26",
   "bookmarks": [
     {
       "title": "【通勤】西武バス（往路）",
@@ -12,12 +12,6 @@
       "url": "https://transfer-cloud.navitime.biz/seibubus/transfers?origin=00113434&destination=00110690",
       "tag": "Trafic",
       "pinned": true
-    },
-    {
-      "title": "【通勤】Yahoo路線",
-      "url": "https://transit.yahoo.co.jp/search/result?from=%E5%9B%BD%E5%88%86%E5%AF%BA&to=%E8%A5%BF%E5%A4%A7%E4%BA%95",
-      "tag": "Trafic",
-      "pinned": false
     },
     {
       "title": "【通勤】Yahoo路線（Oct～）",
@@ -41,12 +35,6 @@
       "title": "Yahooファイナンス",
       "url": "https://finance.yahoo.co.jp/",
       "tag": "Finance",
-      "pinned": false
-    },
-    {
-      "title": "タレントパレット",
-      "url": "https://www.pa-consul.co.jp/talentpalette/",
-      "tag": "HR",
       "pinned": false
     },
     {
